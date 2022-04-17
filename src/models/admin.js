@@ -3,12 +3,7 @@ const validator = require('validator')
 const bcrypt = require('bcryptjs')
 
 const adminSchema = new mongoose.Schema({
-    fname:{
-        type: String,
-        required: true,
-        trim: true
-    },
-    lname:{
+    name:{
         type: String,
         required: true,
         trim: true
@@ -17,6 +12,16 @@ const adminSchema = new mongoose.Schema({
         type: String,
         unique: true,
         required: true,
+        trim: true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw('Email is invalid')
+            }
+        }
+    },
+    emailWork:{
+        type: String,
+        unique: true,
         trim: true,
         validate(value){
             if(!validator.isEmail(value)){

@@ -3,12 +3,7 @@ const validator = require('validator')
 const bcrypt = require('bcryptjs')
 
 const stdSchema = new mongoose.Schema({
-    fname:{
-        type: String,
-        required: true,
-        trim: true
-    },
-    lname:{
+    name:{
         type: String,
         required: true,
         trim: true
@@ -29,6 +24,13 @@ const stdSchema = new mongoose.Schema({
         required: true,
         minlength: 8,
         trim: true
+    },
+    Mobile:{
+        type: Number
+    },
+    Matricule:{
+        type: String,
+        required: true
     }
 })
 stdSchema.statics.findByCredentials = async (email, password)=>{
