@@ -1,5 +1,5 @@
 const express = require('express')
-const Admin = require('../models/student')
+const Admin = require('../models/admin')
 const router = new express.Router()
 
 router.get('', async (req,res) => {
