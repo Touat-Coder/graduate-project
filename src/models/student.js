@@ -25,10 +25,10 @@ const stdSchema = new mongoose.Schema({
         minlength: 8,
         trim: true
     },
-    Mobile:{
+    mobile:{
         type: Number
     },
-    Matricule:{
+    matricule:{
         type: String,
         required: true
     }
