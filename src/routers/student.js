@@ -33,10 +33,9 @@ router.post('/list', async (req,res) => {
 
         if(!file.name.match(/\.(xls|xlsx)$/))
             res.status(400).send('plese enter an excel file')
-        console.log(file.name)
         await file.mv('./lists/'+ file.name, (err, result) => {
-            // if (err) throw err
-            console.log('hi there')
+            if (err) throw err
+
             //read excel file
             const wb = xlsx.readFile('./lists/'+ file.name)
             const ws = wb.Sheets['G1']
@@ -44,11 +43,16 @@ router.post('/list', async (req,res) => {
             const stdJson = xlsx.utils.sheet_to_json(ws)
             // const newdata = stdJson.map((i) => i.name)
             const list = stdJson.map((i) => {
-                const std =  new Std(i)
+                if(Std.find({email: i.email})){
+                    console.log(i.name+ '  already exists')
+                }else{
+                    const std =  new Std(i)
                 std.save()
+                }
             })
-            res.send(list)
         })
+        const std = await Std.find()
+        res.send(std)
     } catch (e) {
         console.log(e)
         res.status(400).send(e)
