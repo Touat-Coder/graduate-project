@@ -1,7 +1,11 @@
 const express = require('express')
 const Std = require('../models/student')
 const router = new express.Router()
+const upload = require('express-fileupload')
+const xlsx = require('xlsx')
 
+const app = express()
+app.use(upload())
 router.get('', async (req,res) => {
     try {
         const std =await Std.find()
@@ -21,6 +25,36 @@ router.post('', async(req,res) => {
         res.status(400).send(e)
     }
 })
+
+router.post('/list', async (req,res) => {
+    // if(!req.file.stdfile) throw new Error({error: 'wrong no key'})
+    try {
+        const file = req.files.stdfile
+
+        if(!file.name.match(/\.(xls|xlsx)$/))
+            res.status(400).send('plese enter an excel file')
+        console.log(file.name)
+        await file.mv('./lists/'+ file.name, (err, result) => {
+            // if (err) throw err
+            console.log('hi there')
+            //read excel file
+            const wb = xlsx.readFile('./lists/'+ file.name)
+            const ws = wb.Sheets['G1']
+            // convert the data of the file to json
+            const stdJson = xlsx.utils.sheet_to_json(ws)
+            // const newdata = stdJson.map((i) => i.name)
+            const list = stdJson.map((i) => {
+                const std =  new Std(i)
+                std.save()
+            })
+            res.send(list)
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+
 router.post('/login', async(req, res) => {
     try {
         const std = await Std.findByCredentials(req.body.email, req.body.password)

@@ -21,16 +21,19 @@ const stdSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        //student123
+        default: "$2a$08$rzWQ2ndgprzovFhtcLhYyehPkFyZFtPA0Oyf7Wq6I/m7FKGyrke2a",
         minlength: 8,
         trim: true
     },
-    mobile:{
-        type: Number
+    rank:{
+        type: Number,
+        required: true
     },
     matricule:{
         type: String,
-        required: true
+        required: true,
+        unique: true
     }
 })
 stdSchema.statics.findByCredentials = async (email, password)=>{
