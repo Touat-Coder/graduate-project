@@ -23,15 +23,11 @@ const profSchema = new mongoose.Schema({
         type: String,
         unique: true,
         trim: true,
-        validate(value){
-            if(!validator.isEmail(value)){
-                throw('Email is invalid')
-            }
-        }
     },
     password: {
         type: String,
-        required: true,
+        //professor123
+        default: '$2a$08$YU4eWkbq0XTlR0xUHx1IsOW4FQwiIlFfWJSnkbh2WnFlePV76W4Y2',
         minlength: 8,
         trim: true
     }

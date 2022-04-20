@@ -1,6 +1,8 @@
 const express = require('express')
 const Prof = require('../models/professor')
 const router = new express.Router()
+const upload = require('express-fileupload')
+const xlsx = require('xlsx')
 
 router.get('', async (req,res) => {
     try {
@@ -15,6 +17,36 @@ router.post('', async(req,res) => {
     const prof = new Prof(req.body)
     try {
         await prof.save()
+        res.send(prof)
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+router.post('/list', async (req,res) => {
+    try {
+        const file = req.files.proffile
+
+        if(!file.name.match(/\.(xls|xlsx)$/))
+            res.status(400).send('plese enter an excel file')
+        await file.mv('./lists/'+ file.name, (err, result) => {
+            if (err) throw err
+
+            //read excel file
+            const wb = xlsx.readFile('./lists/'+ file.name)
+            const ws = wb.Sheets['G1']
+            // convert the data of the file to json
+            const profJson = xlsx.utils.sheet_to_json(ws)
+            // const newdata = stdJson.map((i) => i.name)
+            const list = profJson.map((i) => {
+        
+                    const prof =  new Prof(i)
+                    prof.save()
+                    console.log(prof)
+                
+            })
+        })
+        const prof = await Prof.find()
         res.send(prof)
     } catch (e) {
         console.log(e)
