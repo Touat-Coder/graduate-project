@@ -8,7 +8,7 @@ const router = new express.Router()
 router.get('', async (req,res) => {
     try {
         const std =await Std.find()
-        res.send(std)
+        res.json(std)
     } catch (e) {
         console.log(e)
         res.status(400).send(e)
