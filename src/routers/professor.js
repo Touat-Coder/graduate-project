@@ -1,70 +1,41 @@
 const express = require('express')
 const Prof = require('../models/professor')
 const router = new express.Router()
-const upload = require('express-fileupload')
+const multer = require('multer')
 const xlsx = require('xlsx')
 
 router.get('', async (req,res) => {
     try {
         const prof =await Prof.find()
-        res.send(prof)
+        res.json(prof)
     } catch (e) {
         console.log(e)
-        res.status(400).send(e)
+        res.status(400).json(e)
     }
 }) 
 router.post('', async(req,res) => {
     const prof = new Prof(req.body)
     try {
         await prof.save()
-        res.send(prof)
+        res.json(prof)
     } catch (e) {
         console.log(e)
-        res.status(400).send(e)
+        res.status(400).json(e)
     }
 })
-router.post('/list', async (req,res) => {
-    try {
-        const file = req.files.proffile
 
-        if(!file.name.match(/\.(xls|xlsx)$/))
-            res.status(400).send('plese enter an excel file')
-        await file.mv('./lists/'+ file.name, (err, result) => {
-            if (err) throw err
-
-            //read excel file
-            const wb = xlsx.readFile('./lists/'+ file.name)
-            const ws = wb.Sheets['G1']
-            // convert the data of the file to json
-            const profJson = xlsx.utils.sheet_to_json(ws)
-            // const newdata = stdJson.map((i) => i.name)
-            const list = profJson.map((i) => {
-        
-                    const prof =  new Prof(i)
-                    prof.save()
-                    console.log(prof)
-                
-            })
-        })
-        const prof = await Prof.find()
-        res.send(prof)
-    } catch (e) {
-        console.log(e)
-        res.status(400).send(e)
-    }
-})
 router.post('/login', async(req, res) => {
     try {
         const prof = await Prof.findByCredentials(req.body.email, req.body.password)
-        res.send(prof)
+        res.json(prof)
     } catch (e) {
         console.log(e)
-        res.status(400).send(e)
+        res.status(400).json(e)
     }
 })
 router.patch('', async(req, res) => {
     if(!req.body.id){
-        res.status(404).send({Error: 'provid an id please !!'})
+        res.status(404).json({Error: 'provid an id please !!'})
     }
     try {
         const allowed = ['password', 'id', 'email', 'emailWork']
@@ -73,12 +44,12 @@ router.patch('', async(req, res) => {
             return allowed.includes(apdate)
         })
         if(!isvalid)
-            res.status(400).send({Error: 'invalid updates !!'})
+            res.status(400).json({Error: 'invalid updates !!'})
 
         const prof = await Prof.findById(req.body.id)
 
         if(!prof)
-            res.status(404).send()
+            res.status(404).json()
 
         if(req.body.password)
             prof.passowrd = req.body.passowrd
@@ -90,20 +61,48 @@ router.patch('', async(req, res) => {
             prof.emailWork = req.body.emailWork
         
         await prof.save()
-        res.send(prof)
+        res.json(prof)
     } catch (e) {
-        res.status(400).send()
+        res.status(400).json()
     }
 })
 router.delete('', async(req, res) => {
     try {
         const prof = await Prof.findByIdAndDelete(req.body.id)
         if(!prof)
-            res.status(400).send()
+            res.status(400).json()
         
-        res.send(prof)
+        res.json(prof)
     } catch (e) {
-        res.status(500).send()
+        res.status(500).json()
     }
+})
+
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./lists")
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    }
+})
+const upload = multer({storage: fileStorage})
+
+router.post('/list', upload.single('proffile'), (req, res) => {
+    console.log(req.file.originalname)
+    const wb = xlsx.readFile('./lists/'+req.file.originalname)
+    const ws = wb.Sheets['G1']
+    const data = xlsx.utils.sheet_to_json(ws)
+    try {
+        data.map((i) => {
+            const prof = new Prof(i)
+            prof.save()
+        })
+        res.json(data)
+    } catch (e) {
+        console.log(e)
+        res.status(400).json(e)
+    }
+    
 })
 module.exports=router

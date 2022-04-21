@@ -2,7 +2,6 @@ const express = require('express')
 const Std = require('../models/student')
 const multer = require('multer')
 const xlsx = require('xlsx')
-const { find } = require('../models/student')
 const router = new express.Router()
 
 router.get('', async (req,res) => {
@@ -11,17 +10,16 @@ router.get('', async (req,res) => {
         res.json(std)
     } catch (e) {
         console.log(e)
-        res.status(400).send(e)
+        res.status(400).json(e)
     }
 }) 
 router.post('', async(req,res) => {
     const std = new Std(req.body)
     try {
         await std.save()
-        res.send(std)
+        res.json(std)
     } catch (e) {
-        console.log(e)
-        res.status(400).send(e)
+        res.status(400).json(e)
     }
 })
 
@@ -45,10 +43,10 @@ router.post('/list', upload.single('stdfile'), (req, res) => {
             const std = new Std(i)
             std.save()
         })
-        res.send(data)
+        res.json(data)
     } catch (e) {
         console.log(e)
-        res.status(400).send(e)
+        res.status(400).json(e)
     }
     
 })
@@ -56,9 +54,9 @@ router.post('/list', upload.single('stdfile'), (req, res) => {
 router.post('/login', async(req, res) => {
     try {
         const std = await Std.findByCredentials(req.body.email, req.body.password)
-        res.send(std)
+        res.json(std)
     } catch (e) {
-        res.status(400).send(e)
+        res.status(400).json(e)
     }
 })
 router.patch('', async(req, res) => {
@@ -68,12 +66,12 @@ router.patch('', async(req, res) => {
         return allowed.includes(update)
     })
     if(!isValid){
-        res.status(400).send({error:'wrong updates !!'})
+        res.status(400).json({error:'wrong updates !!'})
     }
     try {
         const std = await Std.findById(req.body.id)
         if(!std){
-            res.status(404).send()
+            res.status(404).json()
         }
         if(req.body.email){
             std.email = req.body.email
@@ -85,20 +83,20 @@ router.patch('', async(req, res) => {
             std.mobile = req.body.mobile
         }
         await std.save()
-        res.send(std)
+        res.json(std)
     } catch (e) {
-        res.status(400).send()
+        res.status(400).json()
     }
 })
 router.delete('', async (req, res) => {
     try {
         const std = await Std.findByIdAndDelete(req.body.id)
         if(!std){
-            res.status(404).send()
+            res.status(404).json()
         }
-        res.send(std)
+        res.json(std)
     } catch (e) {
-        res.status(400).send()
+        res.status(400).json()
     }
 })
 module.exports=router
