@@ -5,13 +5,11 @@ const bcrypt = require('bcryptjs')
 const stdSchema = new mongoose.Schema({
     name:{
         type: String,
-        required: true,
         trim: true
     },
     email:{
         type: String,
         unique: true,
-        required: true,
         trim: true,
         validate(value){
             if(!validator.isEmail(value)){
@@ -28,22 +26,27 @@ const stdSchema = new mongoose.Schema({
     },
     rank:{
         type: Number,
-        required: true
     },
     matricule:{
         type: String,
-        required: true,
         unique: true
+    },
+    role: {
+        type: String,
+        default:'student'
+    },
+    group:{
+        type: String
     }
 })
 stdSchema.statics.findByCredentials = async (email, password)=>{
     const std = await Std.findOne({email})
     if(!std) {
-        throw new Error('unable to login')
+        return({error:'unable to login'})
     }
     const isMatch = await bcrypt.compare(password, std.password)
     if(!isMatch){
-        throw new Error('Unable to login')
+        return({error:'unable to login'})
     }
     return std
 }

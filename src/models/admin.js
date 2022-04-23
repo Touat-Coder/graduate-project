@@ -34,16 +34,20 @@ const adminSchema = new mongoose.Schema({
         required: true,
         minlength: 8,
         trim: true
+    },
+    role: {
+        type: String,
+        default: 'admin'
     }
 })
 adminSchema.statics.findByCredentials = async (email, password)=>{
     const admin = await Admin.findOne({email})
     if(!admin) {
-        throw new Error('unable to login')
+        return({error:'unable to login'})
     }
     const isMatch = await bcrypt.compare(password, admin.password)
     if(!isMatch){
-        throw new Error('Unable to login')
+        return({error:'unable to login'})
     }
     return admin
 }

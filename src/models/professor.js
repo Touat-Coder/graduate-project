@@ -30,16 +30,20 @@ const profSchema = new mongoose.Schema({
         default: '$2a$08$YU4eWkbq0XTlR0xUHx1IsOW4FQwiIlFfWJSnkbh2WnFlePV76W4Y2',
         minlength: 8,
         trim: true
+    },
+    role: {
+        type: String,
+        default: 'prof'
     }
 })
 profSchema.statics.findByCredentials = async (email, password)=>{
     const prof = await Prof.findOne({email})
     if(!prof) {
-        throw new Error('unable to login')
+        return({error:'unable to login'})
     }
     const isMatch = await bcrypt.compare(password, prof.password)
     if(!isMatch){
-        throw new Error('Unable to login')
+        return({error:'unable to login'})
     }
     return prof
 }
