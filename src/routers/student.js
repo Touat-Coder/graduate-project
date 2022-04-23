@@ -4,15 +4,25 @@ const multer = require('multer')
 const xlsx = require('xlsx')
 const router = new express.Router()
 
-router.get('', async (req,res) => {
+router.get('/master', async (req,res) => {
     try {
-        const std =await Std.find()
+        const std =await Std.find({group: 'Info_M'})
         res.json(std)
     } catch (e) {
         console.log(e)
         res.status(400).json(e)
     }
-}) 
+})
+router.get('/licence', async (req,res) => {
+    try {
+        const std =await Std.find({group: 'Info_L'})
+        res.json(std)
+    } catch (e) {
+        console.log(e)
+        res.status(400).json(e)
+    }
+})
+
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
