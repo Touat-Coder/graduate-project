@@ -1,6 +1,8 @@
 const express = require('express')
 const Admin = require('../models/admin')
+const Group = require('../models/group')
 const router = new express.Router()
+
 
 router.get('', async (req,res) => {
     try {
@@ -20,6 +22,10 @@ router.post('', async(req,res) => {
         console.log(e)
         res.status(400).json(e)
     }
+})
+router.post('groups', async (req, res) => {
+    const group = new Group(req.body)
+    res.json('helloo')
 })
 
 module.exports=router
