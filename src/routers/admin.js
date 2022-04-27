@@ -23,9 +23,15 @@ router.post('', async(req,res) => {
         res.status(400).json(e)
     }
 })
-router.post('groups', async (req, res) => {
+router.post('/groups', async (req, res) => {
     const group = new Group(req.body)
-    res.json('helloo')
+    console.log(group.std1)
+    try {
+        await group.save()
+        res.json(group)
+    } catch (e) {
+        res.status(400).json()
+    }
 })
 
 module.exports=router

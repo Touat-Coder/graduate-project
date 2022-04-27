@@ -9,7 +9,7 @@ const groupSchema= new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Std'
     },
-    std2:{
+    std3:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Std'
     },
