@@ -13,6 +13,10 @@ const groupSchema= new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Std'
     },
+    boss:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Std'
+    },
     rank:{
         type: Number
     }

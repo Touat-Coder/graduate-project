@@ -6,11 +6,8 @@ const xlsx = require('xlsx')
 
 router.get('', async (req,res) => {
     try {
-        console.log('before')
         const prof =await Prof.find()
-        console.log('while')
         res.json(prof)
-        console.log('after')
     } catch (e) {
         console.log(e)
         res.status(400).json(e)
@@ -32,12 +29,14 @@ router.post('/list', upload.single('proflist'), (req, res) => {
     const wb = xlsx.readFile('./lists/'+req.file.originalname)
     const ws = wb.Sheets['G1']
     const data = xlsx.utils.sheet_to_json(ws)
+    var list = []
     try {
         data.map((i) => {
             const prof = new Prof(i)
             prof.save()
+            list.push(prof)
         })
-        res.json(data)
+        res.json(list)
     } catch (e) {
         console.log(e)
         res.status(400).json(e)

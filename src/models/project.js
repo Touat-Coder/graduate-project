@@ -7,12 +7,11 @@ const projectShcema = new mongoose.Schema({
         trim: true,
         unique: true
     },
-    stdGroup: {
-        
-    },
-    examiner: {
-        type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: 'Prof'
+    encadreur: {
+        type: String,
+        trim: true,
+        required: true
     },
 })
+const Project = mongoose.model('Project', projectShcema)
+module.exports = Project
